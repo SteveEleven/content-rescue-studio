@@ -1,0 +1,16 @@
+{
+  "name": "Content Rescue Studio",
+  "short_name": "Rescue Studio",
+  "description": "Turn a local business's existing information into a ready-to-produce week of short-form video content.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1113",
+  "theme_color": "#d1fe17",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
