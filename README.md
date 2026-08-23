@@ -3,6 +3,14 @@
 Mobile-first web app that turns a local business's existing information into a ready-to-produce
 week of short-form video content. Built for a one-day hackathon demo: one polished workflow.
 
+## Demo video
+
+<video src="demo/pitch.mp4" controls width="720" preload="metadata">
+  <a href="demo/pitch.mp4">Watch the pitch (MP4)</a>
+</video>
+
+[Watch the pitch (MP4)](demo/pitch.mp4)
+
 ## Run
 
 ```bash
