@@ -5,11 +5,13 @@ week of short-form video content. Built for a one-day hackathon demo: one polish
 
 ## Demo video
 
-<video src="demo/pitch.mp4" controls width="720" preload="metadata">
-  <a href="demo/pitch.mp4">Watch the pitch (MP4)</a>
-</video>
+**[▶ Watch the 60-second pitch video](https://github.com/SteveEleven/content-rescue-studio/blob/main/demo/pitch.mp4)**
 
-[Watch the pitch (MP4)](demo/pitch.mp4)
+
+
+
+
+
 
 ## Run
 
