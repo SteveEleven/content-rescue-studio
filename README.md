@@ -5,13 +5,7 @@ week of short-form video content. Built for a one-day hackathon demo: one polish
 
 ## Demo video
 
-**[▶ Watch the 60-second pitch video](https://github.com/SteveEleven/content-rescue-studio/blob/main/demo/pitch.mp4)**
-
-
-
-
-
-
+https://github.com/user-attachments/assets/0cdc38ff-c3f6-4571-8a2e-6db76faf018c
 
 ## Run
 
