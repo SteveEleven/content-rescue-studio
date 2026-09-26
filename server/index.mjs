@@ -1,9 +1,13 @@
-// Content Rescue Studio — backend for POST /api/generate
+// Content Rescue Studio — POST /api/generate, plus the built app in production.
 // Zero dependencies. Node 18+. Talks to any OpenAI-compatible chat-completions endpoint.
-// Run:  node server/index.mjs     (reads .env from project root)
+// Dev:  node server/index.mjs                  (API only; Vite serves the frontend)
+// Prod: NODE_ENV=production node server/index.mjs   (dist/ and /api on one origin)
+// Reads .env from the project root. Does not override variables that are already set.
 
 import { createServer } from 'node:http'
-import { readFileSync } from 'node:fs'
+import { createReadStream, readFileSync, realpathSync, statSync } from 'node:fs'
+import { basename, extname, resolve, sep } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 // --- tiny .env loader ---------------------------------------------------
 try {
@@ -169,21 +173,140 @@ function readBody(req) {
   })
 }
 
-createServer(async (req, res) => {
-  const send = (code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }); res.end(JSON.stringify(obj)) }
-  if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'POST' }); return res.end() }
-  if (req.url === '/api/health') return send(200, { ok: true, model: MODEL, base: BASE_URL, keySet: !!API_KEY })
-  if (req.url !== '/api/generate' || req.method !== 'POST') return send(404, { error: 'not found' })
-  if (!API_KEY) return send(500, { error: 'LLM_API_KEY not set' })
+// Render sets NODE_ENV=production at runtime. Local `npm start` / `npm run server` leave it unset,
+// so Vite keeps serving the frontend and this process stays API-only.
+const SERVE_APP = process.env.NODE_ENV === 'production'
+const DIST_DIR = fileURLToPath(new URL('../dist/', import.meta.url))
+
+const MIME = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.webmanifest': 'application/manifest+json',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.gif': 'image/gif',
+  '.ico': 'image/x-icon',
+  '.txt': 'text/plain; charset=utf-8',
+  '.map': 'application/json',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.mp4': 'video/mp4',
+}
+
+function sendJson(res, code, obj) {
+  res.writeHead(code, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Access-Control-Allow-Origin': '*',
+    'X-Content-Type-Options': 'nosniff',
+  })
+  res.end(JSON.stringify(obj))
+}
+
+/** Decode the request path once. Traversal and any `.env` segment are denied before the filesystem. */
+function decodeRequestPath(url) {
+  const cut = url.search(/[?#]/)
+  const raw = cut === -1 ? url : url.slice(0, cut)
+  if (!raw.startsWith('/')) return { bad: true }
+  let decoded
+  try { decoded = decodeURIComponent(raw) } catch { return { bad: true } }
+  if (decoded.includes('\0')) return { bad: true }
+  const segments = decoded.replaceAll('\\', '/').split('/')
+  if (segments.slice(1).some((s) => s === '..' || s.toLowerCase() === '.env')) return { deny: true }
+  const path = '/' + segments.slice(1).filter((s) => s !== '' && s !== '.').join('/')
+  return { path }
+}
+
+function insideDir(root, target) {
+  const prefix = root.endsWith(sep) ? root : root + sep
+  return target === root || target.startsWith(prefix)
+}
+
+/** A regular file inside dist/, or null if it should fall through. `{ deny: true }` never falls through to index.html. */
+function resolveDistFile(urlPath) {
+  let root
+  try { root = realpathSync(DIST_DIR) } catch { return null }
+  const rel = urlPath.replace(/^\/+/, '')
+  if (!rel) return null
+  const candidate = resolve(root, rel)
+  if (!insideDir(root, candidate)) return { deny: true }
+  let real
+  try {
+    if (!statSync(candidate).isFile()) return null
+    real = realpathSync(candidate)
+  } catch { return null }
+  if (!insideDir(root, real) || basename(real).toLowerCase() === '.env') return { deny: true }
+  return { file: real }
+}
+
+function serveFile(req, res, filePath) {
+  let st
+  try { st = statSync(filePath) } catch { return sendJson(res, 404, { error: 'not found' }) }
+  const ext = extname(filePath).toLowerCase()
+  const headers = {
+    'Content-Type': MIME[ext] || 'application/octet-stream',
+    'Content-Length': st.size,
+    'X-Content-Type-Options': 'nosniff',
+  }
+  if (ext === '.html') headers['Cache-Control'] = 'no-cache'
+  res.writeHead(200, headers)
+  if (req.method === 'HEAD') return res.end()
+  const stream = createReadStream(filePath)
+  stream.on('error', () => { if (!res.writableEnded) res.destroy() })
+  res.on('close', () => stream.destroy())
+  stream.pipe(res)
+}
+
+async function handleGenerate(req, res) {
+  if (!API_KEY) return sendJson(res, 500, { error: 'LLM_API_KEY not set' })
   try {
     const intake = JSON.parse(await readBody(req))
-    if (!intake || typeof intake !== 'object' || !intake.business_name) return send(400, { error: 'invalid intake' })
+    if (!intake || typeof intake !== 'object' || !intake.business_name) return sendJson(res, 400, { error: 'invalid intake' })
     const t0 = Date.now()
     const pack = await callLLM(intake)
     console.log(`[server] generated pack for "${intake.business_name}" in ${Date.now() - t0}ms`)
-    send(200, pack)
+    sendJson(res, 200, pack)
   } catch (e) {
     console.error('[server]', e.message)
-    send(502, { error: e.message })
+    sendJson(res, 502, { error: e.message })
   }
-}).listen(PORT, () => console.log(`[server] listening on http://localhost:${PORT}  model=${MODEL}  base=${BASE_URL}`))
+}
+
+function handleApi(req, res, path) {
+  if (path === '/api/health' && req.method === 'GET') {
+    return sendJson(res, 200, { ok: true, model: MODEL, base: BASE_URL, keySet: !!API_KEY })
+  }
+  if (path === '/api/generate' && req.method === 'POST') return handleGenerate(req, res)
+  return sendJson(res, 404, { error: 'not found' })
+}
+
+createServer(async (req, res) => {
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'POST',
+    })
+    return res.end()
+  }
+  const decoded = decodeRequestPath(req.url || '/')
+  if (decoded.bad) return sendJson(res, 400, { error: 'bad request' })
+  if (decoded.deny) return sendJson(res, 404, { error: 'not found' })
+  const path = decoded.path
+  // API wins over static files and never falls through to index.html.
+  if (path === '/api' || path.startsWith('/api/')) return handleApi(req, res, path)
+  if (!SERVE_APP || (req.method !== 'GET' && req.method !== 'HEAD')) return sendJson(res, 404, { error: 'not found' })
+  const hit = resolveDistFile(path)
+  if (hit?.deny) return sendJson(res, 404, { error: 'not found' })
+  if (hit?.file) return serveFile(req, res, hit.file)
+  // Missing assets stay 404. Extension-less browser paths get the SPA shell.
+  if (extname(path)) return sendJson(res, 404, { error: 'not found' })
+  const index = resolveDistFile('/index.html')
+  if (!index?.file) return sendJson(res, 404, { error: 'not found' })
+  return serveFile(req, res, index.file)
+}).listen(PORT, '0.0.0.0', () => console.log(`[server] listening on http://localhost:${PORT}  model=${MODEL}  base=${BASE_URL}  static=${SERVE_APP}`))

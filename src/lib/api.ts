@@ -1,7 +1,7 @@
 import type { Intake, Pack } from './types'
 import { DEMO_PACK } from './demoPack'
 
-export const GENERATE_TIMEOUT_MS = 45_000 // reasoning models need ~25s for a full pack; still falls back to the demo pack on timeout
+export const GENERATE_TIMEOUT_MS = 90_000 // free-host cold start plus generation; then fall back to the demo pack
 
 export interface GenerateResult {
   pack: Pack
@@ -11,7 +11,7 @@ export interface GenerateResult {
 
 /**
  * The single AI entry point. POSTs the intake to /api/generate and expects a Pack as JSON.
- * Any failure (network, timeout > 20s, non-2xx, malformed JSON, wrong shape) silently
+ * Any failure (network, timeout after 90s, non-2xx, malformed JSON, wrong shape) silently
  * falls back to the embedded demo pack so the app never shows a broken state.
  */
 export async function generatePack(intake: Intake): Promise<GenerateResult> {

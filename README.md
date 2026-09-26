@@ -77,34 +77,43 @@ in `src/lib/types.ts`:
 The request body is the `Intake` shape (`business_name`, `industry`, `location`, `offer_goal`,
 `target_customer`, `platform`, `tone: string[]`, `required_footer`, `source_text`).
 
-If the call fails, takes longer than **45 s**, returns non-2xx, or returns JSON that doesn't match
+If the call fails, takes longer than **90 s**, returns non-2xx, or returns JSON that doesn't match
 the contract (`normalizePack` in `src/lib/api.ts`), the app silently falls back to the embedded demo
 pack (`src/lib/demoPack.ts`) and shows a small **"Showing prepared demo pack"** badge. It never shows
 a broken state.
 
 ### Backend (server/index.mjs)
 
-Zero-dependency Node server: `npm run server` (or `npm start` for server + Vite together). Reads `.env`:
+Zero-dependency Node server: `npm run server` (or `npm start` for server + Vite together). Reads `.env`
+without overriding variables that are already set. The intended model is Gemini
+(`gemini-3-flash-preview` via its OpenAI-compatible endpoint). Leave `LLM_THINKING` unset — Gemini
+rejects `enable_thinking`.
 
 | Var              | Default   | Meaning                                                                 |
 | ---------------- | --------- | ----------------------------------------------------------------------- |
-| `LLM_BASE_URL`   | OpenAI    | OpenAI-compatible `/chat/completions` base (currently GMI)              |
+| `LLM_BASE_URL`   | OpenAI    | OpenAI-compatible `/chat/completions` base. Gemini: `https://generativelanguage.googleapis.com/v1beta/openai` |
 | `LLM_API_KEY`    | —         | Bearer token (never commit; `.env` is gitignored)                        |
-| `LLM_MODEL`      | gpt-4o-mini | Model id                                                              |
-| `PORT`           | 3000      | Server port (Vite proxies `/api` here in dev)                            |
-| `LLM_TIMEOUT_MS` | 50000     | Overall deadline per request; client falls back to the demo pack at 45s |
+| `LLM_MODEL`      | gpt-4o-mini | Model id. Production: `gemini-3-flash-preview`                         |
+| `PORT`           | 3000      | Server port (Vite proxies `/api` here in dev; Render sets this)          |
+| `LLM_TIMEOUT_MS` | 50000     | Server-side deadline per request. The browser waits 90s, then falls back to the demo pack. |
 | `LLM_HEDGE_MS`   | 20000     | Hedged retry: fire a 2nd identical request if the 1st is still running after this long (or failed transiently); first success wins. `0` disables. |
-| `LLM_THINKING`   | off       | `1` re-enables reasoning for thinking models (DeepSeek); off is faster   |
+| `LLM_THINKING`   | unset     | Leave unset for Gemini. `1` sends `enable_thinking`, which Gemini rejects |
 
-Typical latency with `anthropic/claude-haiku-4.5` via GMI: 13–15 s per pack.
+### Local dev
 
-### Where to wire it
+`vite.config.ts` proxies `/api` → `http://localhost:3000`. If the server is down the proxy errors and
+the client silently shows the demo pack. With `NODE_ENV` unset, the Node process is API-only.
 
-- **Dev:** `vite.config.ts` proxies `/api` → `http://localhost:3000`. If the server is down the
-  proxy errors and the client silently shows the demo pack.
+### Deploy on Render
 
-- **Prod:** serve `dist/` as static files and route `/api/generate` to your backend on the same
-  origin (or change the URL in `generatePack`).
+`render.yaml` defines one free Web Service (`runtime: node`). Render builds with
+`npm ci && npm run build`, then starts `node server/index.mjs`. Render sets `NODE_ENV=production`
+at runtime, so that single process serves `dist/` and `/api` on the same origin. `GET /api/health`
+is the health check. Unknown `/api/...` paths return JSON 404 and do not fall through to the app.
+
+Set `LLM_API_KEY` in the Render Dashboard when the blueprint prompts for it. The blueprint sets
+`LLM_BASE_URL` and `LLM_MODEL`. Do not put the key in Git, and do not set `LLM_THINKING`.
+The client still calls same-origin `/api/generate` and waits 90 seconds before showing the prepared demo pack, so a free-instance cold start can finish. The server deadline stays 50 seconds.
 
 ## Project layout
 
