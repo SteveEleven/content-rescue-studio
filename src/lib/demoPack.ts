@@ -2,127 +2,123 @@ import type { Intake, Pack } from './types'
 
 export const DEMO_LABEL = 'Unofficial demo created from public business information'
 
+const FOOTER = '19+ | Please enjoy responsibly | View current menu and hours at ryesandshine.ca'
+
 export const DEMO_INTAKE: Intake = {
   business_name: 'Ryes & Shine Craft Distillery',
-  industry: 'Craft distillery, cocktail bar, food venue & local-events destination',
-  location: '2323 Millstream Road, Langford, BC',
-  offer_goal: 'Drive Sunday live-music visits and highlight the full food / cocktail / events experience.',
-  target_customer:
-    'Adults 19+ in Langford / Greater Victoria looking for local outings, date nights, patio drinks, food, live music, and group plans.',
+  industry: 'Craft distillery, tasting room, cocktails and food',
+  location: '#103-2323 Millstream Road, Langford, British Columbia',
+  offer_goal: 'Explain the grain-to-glass craft and point people to current tastings, tours, menu, and hours.',
+  target_customer: 'Adults 19+ in Langford and Greater Victoria planning a visit to a craft distillery.',
   platform: 'Instagram Reels',
-  tone: ['Warm', 'Playful', 'Craft-focused', 'Locally proud', 'Responsible'],
-  required_footer: '19+ | Please enjoy responsibly',
-  source_text: `Ryes & Shine Craft Distillery — 2323 Millstream Road, Langford, BC.
+  tone: ['Warm', 'Craft-focused', 'Calm', 'Responsible'],
+  required_footer: FOOTER,
+  source_text: `Ryes & Shine Craft Distillery
+#103-2323 Millstream Road, Langford, British Columbia
+Website: ryesandshine.ca
 
-Small-batch craft distillery, cocktail bar, food venue, and local-events destination on Millstream Road. We distill in small batches on site and build our cocktail list around what comes off the still — rye-forward spirits, seasonal infusions, and house-made mixers.
+A craft distillery with a tasting room, cocktails, and food. Spirits are grain-to-glass and made in house in small batches.
 
-The kitchen serves shareable plates and comfort food built to pair with cocktails. Our patio is open for sunny afternoons, and the room fills up for live music, with a rotating lineup of local musicians on Sunday afternoons.
-
-Come for a date night, a group catch-up, a midweek drink, or a lazy Sunday with a live soundtrack. Tours, tastings, and private events available.
-
-Music-forward. Craft-focused. Proudly Langford. 19+ | Please enjoy responsibly.`,
+Tastings, tours, bottle sales, and a seasonal patio may be offered. Availability can change. View current details, explore current options, and check the business website before visiting.`,
 }
 
 export const DEMO_PACK: Pack = {
   business_summary:
-    'Ryes & Shine is a small-batch craft distillery, cocktail bar, food venue, and local-events destination on Millstream Road in Langford, BC. Warm, playful, and music-forward, it gives adults 19+ across Greater Victoria an easy local plan for date nights, patio drinks, group outings, and live music — especially on Sundays.',
-  content_angle: 'Sunday Soundtrack at Ryes & Shine',
+    'Ryes & Shine Craft Distillery is a craft distillery and tasting room at #103-2323 Millstream Road in Langford, British Columbia, with cocktails, food, and in-house small-batch spirits made grain to glass. Tastings, tours, bottle sales, and a seasonal patio may be available; check ryesandshine.ca for current details.',
+  content_angle: 'Craft Distilling at Ryes & Shine',
   videos: [
     {
-      title: 'Choose Your Sunday Soundtrack',
-      hook: 'Your Sunday plans just found their soundtrack.',
+      title: 'The Craft of Distilling',
+      hook: 'Grain goes in. A spirit comes out. That is the craft.',
       script:
-        'Skip the usual Sunday scroll. At Ryes & Shine in Langford, live music, crafted cocktails, and food come together for an easy afternoon out. Find your table, choose your drink, settle into the patio energy, and let the soundtrack do the rest. Bring your favourite people and make Sunday feel like an occasion.',
+        'Grain goes in. A spirit comes out. That is the craft. At Ryes & Shine Craft Distillery in Langford, British Columbia, small-batch spirits are made in house, grain to glass. This is a working distillery and tasting room at #103-2323 Millstream Road, with cocktails and food alongside. Nothing here asks you to guess the menu. View current details before you visit, and come for the craft itself.',
       visual_direction:
-        '1-second patio arrival; close-up cocktail pour; musician performance; food landing at table; cheers without portraying excess; wide venue shot.',
-      cta: 'Plan your Sunday visit.',
-      caption:
-        'Live music, crafted cocktails, and an easy Sunday plan. Find your soundtrack at Ryes & Shine.\n\n19+ | Please enjoy responsibly',
-      hashtags: ['#RyesAndShine', '#LangfordBC', '#SundayLiveMusic', '#CraftDistillery', '#YYJ', '#WestShore', '#PatioSeason'],
+        'Still and spirit close-ups; grain-to-glass process; tasting-room wide shot; cocktail pour; exterior at #103-2323 Millstream Road.',
+      cta: 'Discover the grain-to-glass story',
+      caption: `In-house small-batch spirits, grain to glass, at Ryes & Shine in Langford. View current details before you visit.\n\n${FOOTER}`,
+      hashtags: ['#RyesShine', '#CraftDistillery', '#GrainToGlass', '#LangfordBC', '#SmallBatch'],
     },
     {
-      title: 'From Playlist to Pour',
-      hook: 'What if your favourite song was a cocktail?',
+      title: 'Tasting Room Atmosphere',
+      hook: 'This is the room where the spirits are made.',
       script:
-        'Every song has a mood — so does every cocktail. At Ryes & Shine, our bartenders build drinks the way a good playlist builds a night: a clear opening note, a little surprise in the middle, and a finish you remember. Small-batch spirits distilled right here in Langford, fresh garnish, and a pour that matches the music in the room. Tell us your track, and we will find your glass.',
+        'This is the room where the spirits are made. Ryes & Shine is a craft distillery and tasting room in Langford, British Columbia. Settle in for cocktails and food options to enjoy alongside in-house small-batch spirits. A seasonal patio may be open; check the business website before visiting rather than assuming it is. Bring your favourite people, plan your visit, and let the room tell the story.',
       visual_direction:
-        'Bartender builds a music-inspired signature cocktail — ice cracking into the glass, a slow spirit pour, garnish placed with care, final glass lifted into soft light. Cut on the beat of the backing track.',
-      cta: 'Find your next favourite cocktail in Langford.',
-      caption:
-        'Pick a song. We will pour the cocktail to match. Small-batch spirits, fresh garnish, and a little Langford flair at Ryes & Shine.\n\n19+ | Please enjoy responsibly',
-      hashtags: ['#RyesAndShine', '#CraftCocktails', '#LangfordBC', '#SmallBatch', '#Mixology', '#YYJDrinks', '#VictoriaBC'],
+        'Tasting-room entrance; seated guests with cocktails and plates; bottle on the bar; warm wide shot of the room.',
+      cta: 'Plan your visit',
+      caption: `Cocktails, food, and a tasting room at Ryes & Shine. A seasonal patio may be available. Check current details before you visit.\n\n${FOOTER}`,
+      hashtags: ['#RyesShine', '#TastingRoom', '#LangfordBC', '#CraftDistillery', '#BritishColumbia'],
     },
     {
-      title: 'The Millstream Night-Out Plan',
-      hook: 'Looking for a different kind of Langford night out?',
+      title: 'Explore Tastings and Tours',
+      hook: 'Curious about tastings and tours?',
       script:
-        'Here is the plan. Pull up on Millstream Road and step into a working craft distillery. Start with a cocktail built from spirits made a few feet from your table. Order a few plates for the group. Then let the live music take over — no reservations for the dance floor required. Date night, crew night, or just a Thursday that deserves better. Ryes & Shine has the whole evening covered.',
+        'Curious about tastings and tours? At Ryes & Shine they may be part of a visit, and the lineup can change. Explore current options at ryesandshine.ca before you go. Bottle sales, the tasting room, cocktails, and food are reasons to look up current details, not reasons to assume. View current menu and hours, then plan your visit to the distillery in Langford, British Columbia today.',
       visual_direction:
-        'Exterior arrival at dusk; door opening into warm light; plates landing on the table; cocktail close-up; live-music atmosphere from the crowd’s point of view; friendly staff and guest moments; end on the glowing sign.',
-      cta: 'Visit Ryes & Shine at Millstream Road.',
-      caption:
-        'Craft cocktails, good food, live music — all under one roof on Millstream Road. Your Langford night out, sorted.\n\n19+ | Please enjoy responsibly',
-      hashtags: ['#RyesAndShine', '#LangfordNightOut', '#DateNightYYJ', '#WestShore', '#LiveMusicVictoria', '#CraftDistillery', '#LangfordBC'],
+        'Distillery exterior sign; tasting-room interior; bottle shelf; guest reading current details on a phone.',
+      cta: 'Explore current tastings and tours',
+      caption: `Explore current tastings and tours at Ryes & Shine. Check the website for what is available now.\n\n${FOOTER}`,
+      hashtags: ['#RyesShine', '#LangfordBC', '#CraftDistillery', '#TastingRoom', '#PlanYourVisit'],
     },
   ],
   calendar: [
     {
       day: 'Mon',
-      goal: 'Build anticipation',
-      format: 'Teaser · 3 quick clips',
-      topic: '“This week’s soundtrack” teaser — three fast cuts of music, cocktails, and patio.',
+      goal: 'Show the craft',
+      format: 'Process · short cuts',
+      topic: 'How grain becomes a spirit at Ryes & Shine.',
       video_ref: 'Video 1',
-      cta: 'Save this for weekend plans.',
+      cta: 'Discover the grain-to-glass story',
     },
     {
       day: 'Tue',
-      goal: 'Tell the craft story',
-      format: 'Talking-head explainer',
-      topic: 'Bartender or distiller explains one ingredient or product detail.',
+      goal: 'Show the room',
+      format: 'Room atmosphere',
+      topic: 'A look inside the Langford tasting room.',
       video_ref: 'Video 2',
-      cta: 'Explore the menu.',
+      cta: 'Plan your visit',
     },
     {
       day: 'Wed',
-      goal: 'Drive early-week visits',
-      format: 'Pairing reminder',
-      topic: 'Happy-hour reminder with a cocktail and food pairing.',
+      goal: 'Point to current options',
+      format: 'Detail reminder',
+      topic: 'Tastings and tours: check current details first.',
       video_ref: 'Video 3',
-      cta: 'Make a midweek plan.',
+      cta: 'Explore current tastings and tours',
     },
     {
       day: 'Thu',
-      goal: 'Create an excuse to share',
-      format: 'Reveal',
-      topic: 'Cocktail reveal with a playful music-led hook.',
+      goal: 'Food alongside a drink',
+      format: 'Table scene',
+      topic: 'Food options to enjoy alongside a cocktail.',
       video_ref: 'Video 2',
-      cta: 'Tag your cocktail crew.',
+      cta: 'View current menu and hours',
     },
     {
       day: 'Fri',
-      goal: 'Promote date night',
-      format: 'Venue montage',
-      topic: '“Where are we going tonight?” venue montage — food, drinks, music, room.',
-      video_ref: 'Video 3',
-      cta: 'Plan your Friday night.',
+      goal: 'Invite a planned visit',
+      format: 'Craft montage',
+      topic: 'Grain-to-glass craft, told in one short visit.',
+      video_ref: 'Video 1',
+      cta: 'Plan your visit',
     },
     {
       day: 'Sat',
-      goal: 'Build Sunday demand',
-      format: 'Live-music preview',
-      topic: 'Musician, patio, drinks, and a brunch cue for tomorrow.',
-      video_ref: 'Video 1',
-      cta: 'Make Sunday plans.',
+      goal: 'Send people to the source',
+      format: 'Website reminder',
+      topic: 'Check the website for menu, hours, and current options.',
+      video_ref: 'Video 3',
+      cta: 'View current menu and hours',
     },
     {
       day: 'Sun',
-      goal: 'Convert / social proof',
-      format: 'Live ambience or recap',
-      topic: 'Live ambience from the room or a same-day recap of the afternoon.',
-      video_ref: 'Video 1',
-      cta: 'Visit today / follow for events.',
+      goal: 'Keep the visit easy',
+      format: 'Soft close',
+      topic: 'A calm visit to the distillery in Langford.',
+      video_ref: 'Video 2',
+      cta: 'Plan your visit',
     },
   ],
   production_notes:
-    'Shot list suitable for an AI-avatar or stock-assisted video workflow: patio arrival, cocktail pour close-ups, bartender hands building a drink, live musician (wide + close), food landing at table, group cheers framed as celebration (never excess), exterior arrival at dusk, glowing sign. Keep every video 25–35 seconds with on-screen captions. Never imply intoxication, drinking and driving, or health benefits. Do not state pricing, times, or discounts — point viewers to the venue for details. End every caption with the required footer: “19+ | Please enjoy responsibly”.',
+    'Film the still, tasting room, cocktails, food, and the Millstream Road exterior. Keep each video 25–35 seconds. Do not show intoxication or excess. Do not state prices, hours, discounts, or that tastings, tours, or the patio are open today. Point viewers to ryesandshine.ca. End every caption with the required footer.',
 }

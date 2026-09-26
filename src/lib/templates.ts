@@ -29,9 +29,9 @@ export const TEMPLATES: Template[] = [
   {
     id: 'ryes-and-shine',
     name: 'Ryes & Shine',
-    industry: 'Craft distillery & live music',
-    angle: 'Sunday Soundtrack',
-    blurb: 'Drive Sunday live-music visits with cocktails, food, and patio energy.',
+    industry: 'Craft distillery & tasting room',
+    angle: 'Grain to Glass',
+    blurb: 'Show the craft of distilling and point people to current tastings, tours, menu, and hours.',
     hue: '#1e3a8a',
     featured: true,
     intake: DEMO_INTAKE,

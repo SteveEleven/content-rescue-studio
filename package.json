@@ -10,7 +10,8 @@
     "server": "node server/index.mjs",
     "start": "node server/index.mjs & vite",
     "check:prod": "node scripts/check-prod-server.mjs",
-    "check:client": "node scripts/check-client-timeout.mjs"
+    "check:client": "node scripts/check-client-timeout.mjs",
+    "check:demo": "node scripts/check-demo-pack.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

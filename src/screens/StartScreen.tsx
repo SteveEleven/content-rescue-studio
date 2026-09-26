@@ -127,7 +127,7 @@ export function StartScreen({ intake, onChange, onSubmit, savedPacks, onOpenSave
             style={{ minHeight: 92 }}
             value={intake.offer_goal}
             onChange={(e) => set('offer_goal', e.target.value)}
-            placeholder="e.g. Drive Sunday live-music visits"
+            placeholder="e.g. Explain the craft and point people to current details"
           />
         </div>
 
