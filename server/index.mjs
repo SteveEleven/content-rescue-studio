@@ -89,11 +89,12 @@ async function llmAttempt(intake, signal, label) {
     body: JSON.stringify({
       model: MODEL,
       temperature: 0.7,
-      max_tokens: 3000,
+      max_tokens: 6000,
       response_format: { type: 'json_object' },
       // DeepSeek-V4-Flash is a reasoning model: with thinking on it spends 500-4000 tokens reasoning
       // (counted against max_tokens) and takes 25-40s. Off: ~17s, same quality for this task.
-      enable_thinking: process.env.LLM_THINKING === '1',
+      // Only send this field when explicitly enabled. Gemini rejects the name even when the value is false.
+      ...(process.env.LLM_THINKING === '1' ? { enable_thinking: true } : {}),
       messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: userPrompt(intake) }],
     }),
   })
