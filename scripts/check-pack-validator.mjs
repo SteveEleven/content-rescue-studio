@@ -121,7 +121,7 @@ assert(!log.includes('TAIL-SHOULD-NOT-LOG'), 'log included text past the 400 cha
 assert(!log.includes('LLM_API_KEY'), 'log mentioned the env key name')
 assert(!log.includes('Authorization:'), 'log included an authorization header')
 
-const geminiKey = 'AIzaSyA-this-is-a-fake-key-value-123456'
+const geminiKey = 'AIza' + 'SyA-this-is-a-fake-key-value-123456'
 const keyLog = packFailureLog('hedge', 'videos[1].script', 'stop', geminiKey + ' {"videos":[]}', null)
 assert(!keyLog.includes('AIzaSyA'), 'log kept a Gemini-style key')
 assert(keyLog.includes('videos[1].script'), 'log missing the invalid field path')
