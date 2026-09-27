@@ -1,4 +1,25 @@
-import type { Pack, Video } from './types'
+import type { CalendarDay, Pack, Video } from './types'
+
+/** Weekday schedule used when a pack does not store its own time. Friday is the exception. */
+export function suggestedPostTime(day: string): string {
+  const key = day.trim().slice(0, 3).toLowerCase()
+  if (key === 'fri') return '4:30 PM'
+  if (key === 'sat') return '11:00 AM'
+  if (key === 'sun') return '12:00 PM'
+  return '5:30 PM'
+}
+
+export function dayPostTime(day: CalendarDay): string {
+  const explicit = day.suggested_post_time?.trim()
+  return explicit || suggestedPostTime(day.day)
+}
+
+/** Times for the calendar days that use this video, e.g. "Mon 5:30 PM · Fri 4:30 PM". */
+export function videoPostTimes(pack: Pack, index: number): string {
+  const ref = `Video ${index + 1}`
+  const parts = pack.calendar.filter((day) => day.video_ref === ref).map((day) => `${day.day} ${dayPostTime(day)}`)
+  return parts.length ? parts.join(' · ') : suggestedPostTime('Mon')
+}
 
 export function captionWithTags(v: Video): string {
   const tags = v.hashtags.join(' ')
@@ -23,6 +44,7 @@ export function packToPlainText(pack: Pack, businessName?: string): string {
     lines.push(`Visual direction: ${v.visual_direction}`)
     lines.push(`CTA: ${v.cta}`)
     lines.push(`Caption: ${v.caption.replace(/\n+/g, ' ')}`)
+    lines.push(`Suggested post time: ${videoPostTimes(pack, i)}`)
     if (v.hashtags.length) lines.push(`Hashtags: ${v.hashtags.join(' ')}`)
   })
   lines.push('')
@@ -33,6 +55,7 @@ export function packToPlainText(pack: Pack, businessName?: string): string {
     lines.push(`Format: ${c.format}`)
     lines.push(`Topic: ${c.topic}`)
     lines.push(`Video: ${c.video_ref}`)
+    lines.push(`Suggested post time: ${dayPostTime(c)}`)
     lines.push(`CTA: ${c.cta}`)
   })
   if (pack.production_notes) {

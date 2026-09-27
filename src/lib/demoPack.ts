@@ -69,6 +69,7 @@ export const DEMO_PACK: Pack = {
       topic: 'How grain becomes a spirit at Ryes & Shine.',
       video_ref: 'Video 1',
       cta: 'Discover the grain-to-glass story',
+      suggested_post_time: '5:30 PM',
     },
     {
       day: 'Tue',
@@ -77,6 +78,7 @@ export const DEMO_PACK: Pack = {
       topic: 'A look inside the Langford tasting room.',
       video_ref: 'Video 2',
       cta: 'Plan your visit',
+      suggested_post_time: '5:30 PM',
     },
     {
       day: 'Wed',
@@ -85,6 +87,7 @@ export const DEMO_PACK: Pack = {
       topic: 'Tastings and tours: check current details first.',
       video_ref: 'Video 3',
       cta: 'Explore current tastings and tours',
+      suggested_post_time: '5:30 PM',
     },
     {
       day: 'Thu',
@@ -93,6 +96,7 @@ export const DEMO_PACK: Pack = {
       topic: 'Food options to enjoy alongside a cocktail.',
       video_ref: 'Video 2',
       cta: 'View current menu and hours',
+      suggested_post_time: '5:30 PM',
     },
     {
       day: 'Fri',
@@ -101,6 +105,7 @@ export const DEMO_PACK: Pack = {
       topic: 'Grain-to-glass craft, told in one short visit.',
       video_ref: 'Video 1',
       cta: 'Plan your visit',
+      suggested_post_time: '4:30 PM',
     },
     {
       day: 'Sat',
@@ -109,6 +114,7 @@ export const DEMO_PACK: Pack = {
       topic: 'Check the website for menu, hours, and current options.',
       video_ref: 'Video 3',
       cta: 'View current menu and hours',
+      suggested_post_time: '11:00 AM',
     },
     {
       day: 'Sun',
@@ -117,6 +123,7 @@ export const DEMO_PACK: Pack = {
       topic: 'A calm visit to the distillery in Langford.',
       video_ref: 'Video 2',
       cta: 'Plan your visit',
+      suggested_post_time: '12:00 PM',
     },
   ],
   production_notes:

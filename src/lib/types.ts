@@ -33,6 +33,8 @@ export interface CalendarDay {
   topic: string
   video_ref: string
   cta: string
+  /** Set on the prepared demo pack. Live packs fall back to the weekday schedule. */
+  suggested_post_time?: string
 }
 
 export interface Pack {

@@ -11,7 +11,8 @@
     "start": "node server/index.mjs & vite",
     "check:prod": "node scripts/check-prod-server.mjs",
     "check:client": "node scripts/check-client-timeout.mjs",
-    "check:demo": "node scripts/check-demo-pack.mjs"
+    "check:demo": "node scripts/check-demo-pack.mjs",
+    "check:pack": "node scripts/check-pack-validator.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

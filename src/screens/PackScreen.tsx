@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Pack, Video, CalendarDay } from '../lib/types'
-import { captionWithTags, copyText, packToPlainText, shareText } from '../lib/text'
+import { captionWithTags, copyText, dayPostTime, packToPlainText, shareText, videoPostTimes } from '../lib/text'
 import { CopyButton, Footer, Toast, useToast } from '../components'
 import { DEMO_LABEL } from '../lib/demoPack'
 
@@ -100,7 +100,7 @@ export function PackScreen({
         {tab === 'captions' && (
           <div className="tab-panel stack" role="tabpanel" id="panel-captions" key="captions">
             {pack.videos.map((v, i) => (
-              <CaptionCard key={i} index={i} video={v} />
+              <CaptionCard key={i} index={i} video={v} postTime={videoPostTimes(pack, i)} />
             ))}
           </div>
         )}
@@ -218,7 +218,7 @@ function VideoCard({ index, video }: { index: number; video: Video }) {
   )
 }
 
-function CaptionCard({ index, video }: { index: number; video: Video }) {
+function CaptionCard({ index, video, postTime }: { index: number; video: Video; postTime: string }) {
   return (
     <article className="card stack">
       <div className="card-head">
@@ -242,7 +242,7 @@ function CaptionCard({ index, video }: { index: number; video: Video }) {
       )}
 
       <p className="body body--muted" style={{ fontSize: 14 }}>
-        Suggested post time: <strong style={{ color: 'var(--text)' }}>[placeholder]</strong>
+        Suggested post time: <strong style={{ color: 'var(--text)' }}>{postTime}</strong>
       </p>
     </article>
   )
@@ -267,6 +267,9 @@ function DayCard({ day }: { day: CalendarDay }) {
           {day.format && <span className="tag tag--soft tag--wrap">{day.format}</span>}
           {day.video_ref && <span className="tag">{day.video_ref}</span>}
         </div>
+        <p className="body body--muted" style={{ fontSize: 14 }}>
+          Suggested post time: <strong style={{ color: 'var(--text)' }}>{dayPostTime(day)}</strong>
+        </p>
         <p className="cta-line">
           <span className="label" style={{ display: 'inline', marginRight: 8 }}>
             CTA

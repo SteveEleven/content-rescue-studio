@@ -1,5 +1,6 @@
 // Checks the prepared Ryes & Shine pack and that the generation prompt still has the accuracy rules.
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { packIssue } from '../server/pack.mjs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -93,8 +94,30 @@ try {
   if (days !== 'Mon,Tue,Wed,Thu,Fri,Sat,Sun') throw new Error(`calendar days are ${days}`)
   if (words(DEMO_PACK.production_notes) > 50) throw new Error('production notes exceed 50 words')
 
+  const shape = packIssue(DEMO_PACK)
+  if (shape) throw new Error(`demo pack failed validation at ${shape}`)
+  if (blob.includes('[placeholder]')) throw new Error('demo pack contains [placeholder]')
+  const screen = readFileSync(new URL('../src/screens/PackScreen.tsx', import.meta.url), 'utf8')
+  if (screen.includes('[placeholder]')) throw new Error('captions still show [placeholder]')
+  const expectedTimes = {
+    Mon: '5:30 PM',
+    Tue: '5:30 PM',
+    Wed: '5:30 PM',
+    Thu: '5:30 PM',
+    Fri: '4:30 PM',
+    Sat: '11:00 AM',
+    Sun: '12:00 PM',
+  }
+  for (const day of DEMO_PACK.calendar) {
+    if (day.suggested_post_time !== expectedTimes[day.day]) {
+      throw new Error(`${day.day} suggested post time is ${day.suggested_post_time}`)
+    }
+  }
+
   console.log('PASS demo pack keeps “Ryes & Shine” and the responsible-service footer')
   console.log('PASS demo pack omits unsupported claims')
+  console.log('PASS demo pack matches the required JSON shape')
+  console.log('PASS demo pack has specific suggested post times and no [placeholder]')
   console.log('PASS generation prompt includes the accuracy rules')
   console.log('PASS Gemini settings and backend timeout are unchanged')
 } finally {

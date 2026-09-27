@@ -8,6 +8,7 @@ import { createServer } from 'node:http'
 import { createReadStream, readFileSync, realpathSync, statSync } from 'node:fs'
 import { basename, extname, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { describePackIssue, extractJson, messageText, packFailureLog } from './pack.mjs'
 
 // --- tiny .env loader ---------------------------------------------------
 try {
@@ -50,17 +51,16 @@ These rules apply to every business:
 - hashtags: exactly 5 per video, each starting with #.
 - visual_direction: one line, max 25 words (a shot list, semicolon-separated). caption: max 30 words before the footer.
 - calendar.topic: max 15 words. production_notes: max 50 words.
-- Be concise everywhere; no filler adjectives.
+- Be concise everywhere; no filler adjectives. Stay inside every word cap so the full object fits in one response.
 - calendar.day must be exactly "Mon","Tue","Wed","Thu","Fri","Sat","Sun" in that order. calendar.video_ref must be "Video 1", "Video 2" or "Video 3" (matching the videos array order).
 - The generated JSON must follow the schema below exactly.
-Return VALID JSON ONLY (no markdown, no commentary) with exactly this shape:
-{
-  "business_summary": string,
-  "content_angle": string,
-  "videos": [ { "title", "hook", "script", "visual_direction", "cta", "caption", "hashtags": string[] } ],  // exactly 3
-  "calendar": [ { "day", "goal", "format", "topic", "video_ref", "cta" } ],                                // exactly 7
-  "production_notes": string
-}`
+Return one JSON object only. No markdown, no commentary, no second copy, and no extra keys.
+Every field is required. Use these types, array lengths, and permitted values:
+- business_summary: string, at most 45 words.
+- content_angle: string, 3 to 6 words.
+- videos: array of exactly 3 objects. Each object has title (string, at most 8 words), hook (string, at most 16 words), script (string, 65 to 90 words, beginning with that hook), visual_direction (string, at most 25 words), cta (string, at most 12 words), caption (string, at most 30 words, then the required footer when one was provided), and hashtags (array of exactly 5 strings, each starting with #).
+- calendar: array of exactly 7 objects, in order. Each object has day (string; permitted values in order are "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"), goal (string, at most 8 words), format (string, at most 6 words), topic (string, at most 15 words), video_ref (string; permitted values are "Video 1", "Video 2", "Video 3"), and cta (string, at most 12 words).
+- production_notes: string, at most 50 words.`
 
 function userPrompt(i) {
   return `Business name: ${i.business_name}
@@ -77,29 +77,12 @@ Instructions:
 - Match spelling to the business location. Use Canadian spelling when the location is in Canada.
 - Use only the source text. Where it is incomplete, stay cautious instead of inventing details.
 - If a required footer is provided, copy it onto every caption exactly.
+- Reply with one JSON object that contains every required field. videos length is 3. calendar length is 7. Keep each script between 65 and 90 words and every other field inside its word cap.
 
 Source text (website / about / services):
 """
 ${(i.source_text || '').slice(0, 12000)}
 """`
-}
-
-function extractJson(text) {
-  try { return JSON.parse(text) } catch {}
-  const m = text.match(/```(?:json)?\s*([\s\S]*?)```/)
-  if (m) { try { return JSON.parse(m[1]) } catch {} }
-  const a = text.indexOf('{'), b = text.lastIndexOf('}')
-  if (a >= 0 && b > a) { try { return JSON.parse(text.slice(a, b + 1)) } catch {} }
-  return null
-}
-
-function validate(p) {
-  return p && typeof p === 'object'
-    && typeof p.business_summary === 'string' && typeof p.content_angle === 'string'
-    && Array.isArray(p.videos) && p.videos.length === 3
-    && Array.isArray(p.calendar) && p.calendar.length === 7
-    && p.videos.every(v => v && typeof v.title === 'string' && typeof v.script === 'string')
-    && p.calendar.every(c => c && typeof c.day === 'string')
 }
 
 /** One LLM attempt. Rejects on abort, non-2xx, or an invalid pack shape. */
@@ -112,10 +95,11 @@ async function llmAttempt(intake, signal, label) {
       model: MODEL,
       temperature: 0.7,
       max_tokens: 6000,
+      // Gemini 3 counts thinking tokens against max_tokens and defaults to a high thinking level.
+      // That cuts the JSON off (finish_reason=length) inside this 6000 cap. minimal leaves room for the pack.
+      // Only send enable_thinking when explicitly enabled. Gemini rejects that name even when the value is false.
+      reasoning_effort: 'minimal',
       response_format: { type: 'json_object' },
-      // DeepSeek-V4-Flash is a reasoning model: with thinking on it spends 500-4000 tokens reasoning
-      // (counted against max_tokens) and takes 25-40s. Off: ~17s, same quality for this task.
-      // Only send this field when explicitly enabled. Gemini rejects the name even when the value is false.
       ...(process.env.LLM_THINKING === '1' ? { enable_thinking: true } : {}),
       messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: userPrompt(intake) }],
     }),
@@ -126,11 +110,12 @@ async function llmAttempt(intake, signal, label) {
     throw err
   }
   const data = await res.json()
-  const text = data?.choices?.[0]?.message?.content ?? ''
+  const text = messageText(data?.choices?.[0]?.message)
   const pack = extractJson(text)
-  if (!validate(pack)) {
-    console.error('[server] %s: invalid pack. finish_reason=%s content head: %s', label, data?.choices?.[0]?.finish_reason, text.slice(0, 400).replace(/\n/g, ' '))
-    throw new Error('LLM returned an invalid pack shape')
+  const issue = describePackIssue(text)
+  if (issue) {
+    console.error(packFailureLog(label, issue, data?.choices?.[0]?.finish_reason, text, data?.usage))
+    throw new Error(`LLM returned an invalid pack shape (${issue})`)
   }
   // enforce footer + hashtag hygiene server-side
   const footer = (intake.required_footer || '').trim()
